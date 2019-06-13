@@ -1,0 +1,208 @@
+<odoo>
+	<data>
+		<record id="help_desk_tree" model="ir.ui.view">
+			<field name="name">Help Desk Tree</field>
+			<field name="model">hr.helpdesk</field>
+			<field name="domain">[('status', '=', 'draft')]</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name"/>
+					<field name="reason"/>
+					<field name="sending_date"/> 
+					<field name="status"/>
+					<field name="priority"/>
+
+				</tree>
+			</field>
+
+		</record>
+		<record id="help_desk_form" model="ir.ui.view">
+			<field name="name">Help Desk Form</field>
+			<field name="model">hr.helpdesk</field>
+			<field name="domain">[('status', '=', 'draft')]</field>
+			<field name="arch" type="xml">
+				<form>
+					<header>
+						<!-- <button name="Reply_help_desk" string="Replay" type="object" attrs="{'invisible':[('status','=','replied')]}"/>
+					<field name="status" status_visible="draft,replied" widget="statusbar" readonly="1"/> -->
+					<button name="approval" string="Send To Hr" type="object" attrs="{'invisible': ['|',('department_help_desk', '!=', 'hr'),('status','in',('hr','done'))]}"/>
+
+
+					<button name="approval" string="Send To IT" type="object" attrs="{'invisible': ['|',('department_help_desk', '!=', 'it'),('status','in',('it','done'))]}"/>
+
+					<button name="approval" string="Send To Gravience" type="object" attrs="{'invisible': ['|',('department_help_desk', '!=', 'gravience'),('status','in',('gravience','done'))]}"/>
+					
+
+					<button name="replayer_action" string="Replay" type="object" attrs="{'invisible': [('status', '!=', 'hr')]}" groups="bi_hr.group_help_desk_employee_manager13"/>
+
+					<button name="replayer_action" string="Replay" type="object" attrs="{'invisible': [('status', '!=', 'it')]}" groups="bi_hr.group_help_desk_employee_it_manager"/>
+
+					<button name="replayer_action" string="Replay" type="object" attrs="{'invisible': [('status', '!=', 'gravience')]}" groups="bi_hr.group_help_desk_employee_ceo"/>
+
+					<field name="status" status_visible="draft,hr,it,gravience,done" widget="statusbar" readonly="1"/> 
+
+					</header>
+					
+					<sheet>
+						<group>
+							
+								<field name="department_help_desk" widget="selection"/>
+							
+						</group>
+
+						<group>
+
+							
+							<group>
+								<field name="name" widget="selection" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+								<field name="mobile" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+								<field name="email" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+								<field name="designation" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+
+								
+							</group>
+							<group>
+								<field name="reason" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+								
+								<field name="sending_date" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+
+								<field name="attach" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+
+							</group>
+						</group>
+							<separator string="description"/>
+							<field name="description" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+						<group>
+							<group>
+								<field name="priority" widget="radio" attrs="{'invisible': [('department_help_desk', '=', False)]}"/>
+							</group>
+						</group>
+							
+
+							<!-- <group>
+    							<label for="urgent"/>
+    								<div>
+        								<field name="urgent" class="oe_inline"/>
+        								<field name="high" class="oe_inline"/>
+    								</div>
+							</group> -->
+							<separator string="Replay Message" attrs="{'invisible': [('department_help_desk', '=', False)]}" groups="bi_hr.group_help_desk_employee_manager13,bi_hr.group_help_desk_employee_it_manager,bi_hr.group_help_desk_employee_ceo"/>
+							<field name="replay_message" attrs="{'invisible': [('department_help_desk', '=', False)]}" groups="bi_hr.group_help_desk_employee_manager13,bi_hr.group_help_desk_employee_it_manager,bi_hr.group_help_desk_employee_ceo"/>
+						
+					</sheet>
+				</form>
+			</field>
+		</record>
+		<record id="help_desk_form_action11" model="ir.actions.act_window">
+			<field name="name">Help Desk Form Action</field>
+			<field name="res_model">hr.helpdesk</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<record id="department_tree" model="ir.ui.view">
+			<field name="name">Department Tree</field>
+			<field name="model">hr.help_department</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name"/>
+					
+
+				</tree>
+			</field>
+
+		</record>
+
+
+
+		<record id="help_desk_department_form" model="ir.ui.view">
+			<field name="name">department help desk</field>
+			<field name="model">hr.help_department</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<group>
+							<group>
+								<field name="name"/>
+
+							</group>
+						</group>
+						
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="department_desk_form_actions1" model="ir.actions.act_window">
+			<field name="name">Department Desk Form Action</field>
+			<field name="res_model">hr.help_department</field>
+			<field name="view_mode">tree,form</field>	
+		</record>
+		<record id="help_desk_mail" model="mail.template">
+            <field name="name">Help Desk Mail</field>
+            <field name="model_id" ref="model_hr_helpdesk"></field>
+            <field name="email_from">${}</field>
+            <field name="email_to">${object.email | safe}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="subject">Solution Of Your Complaint</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear ${object.name}</br>
+
+                &nbsp;&nbsp;&nbsp;${object.replay_message}</p>
+                
+                <hr/>
+            
+                
+                
+            ]]>
+            </field>
+        </record>
+        <menuitem
+            id="help_desk_main" 
+            name="Help Desk"
+            parent="hr.menu_hr_root"
+           
+            
+            />
+
+
+		<menuitem
+            id="help_desk_view_hr_department"
+            name="Complaint Box."
+            action="help_desk_form_action11"
+            parent="help_desk_main"
+            groups="bi_hr.group_help_desk_employee12"
+          
+            />
+          <!-- <menuitem
+            id="department_of_help_desk"
+            name="Add Department"
+            action="department_desk_form_actions"
+            parent="help_desk_main"
+          
+            /> -->
+
+        <record id="help_desk_form_action_itmanager" model="ir.actions.act_window">
+			<field name="name">Help Desk Form Action</field>
+			<field name="res_model">hr.helpdesk</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('department_help_desk','=','it')]</field>
+		</record>
+
+		<record id="help_desk_form_action_hrmanager" model="ir.actions.act_window">
+			<field name="name">Help Desk Form Action</field>
+			<field name="res_model">hr.helpdesk</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('department_help_desk','=','hr')]</field>
+		</record>
+
+		<record id="help_desk_form_action_gravience" model="ir.actions.act_window">
+			<field name="name">Help Desk Form Action</field>
+			<field name="res_model">hr.helpdesk</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('department_help_desk','=','gravience')]</field>
+		</record>
+
+
+	</data>
+</odoo>

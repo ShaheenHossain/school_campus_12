@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+
+<odoo>
+        <record id="view_school_standard_form_inherit_add_teacher" model="ir.ui.view">
+            <field name="name">view.school.standard.form.inherit.add.teacher</field>
+            <field name="model">school.standard</field>
+            <field name="inherit_id" ref="school.view_school_standard_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <field name="remaining_seats" position="after">
+                        <field name="teacher_id"/>
+                    </field>
+                </data>
+            </field>
+        </record>
+        </odoo>
+        
