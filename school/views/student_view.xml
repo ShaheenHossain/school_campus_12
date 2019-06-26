@@ -99,7 +99,7 @@
 						<group string="Student Information">
 							<field name="student_code" readonly="1" />
 							<field name="roll_no" help="Roll number of Student"
-								readonly="1" />
+								 />
 							<field name="school_id" placeholder="Campus"
 								help="Campus of Student"
 								attrs="{'readonly':['|',('state','in',['alumni','terminate']),('teachr_user_grp','=',True)]}" />
@@ -119,7 +119,7 @@
 									required="1" widget="selection" />
 
 								<field name="medium_id" placeholder="Shift"
-									options="{'no_create_edit': True,'no_create': True,'no_open': True}" widget="selection" 
+								options="{'no_create_edit': True,'no_create': True,'no_open': True}" widget="selection" domain="[('program','=',program_id)]"
 									/>
 								<field name="semester_id"
 									domain="[('standard_id','=',program_id)]"
@@ -127,7 +127,7 @@
 									required="1"  widget="selection"/>
 
 								<field name="standard_id" placeholder="Class"
-									domain="[('school_id','=',school_id),('medium_id','=',medium_id),('standard_id','=',program_id),('semester_id','=',semester_id),('state','!=','close')]"
+									domain="[('medium_id','=',medium_id),('standard_id','=',program_id),('semester_id','=',semester_id),('state','!=','close')]"
 									attrs="{'invisible':[('state','not in',['invoiced','done','alumni','terminate']),('is_class','!=',True)]}"
 									options="{'no_create_edit': True,'no_create': True,'no_open': True}" />
 								<field name="is_class" invisible="1" />
@@ -532,7 +532,7 @@
 				<header>
 					<button class="oe_stat_button"
 						name="%(school.action_followup_wizard)d" string="Send To OFU"
-						type="action" states="done,draft,movesemester,repeat"
+						type="action" states="done,draft,movesemester,repeat" attrs="{'invisible':[('state','=','done')]}"
 						groups="school.group_school_administration,school.group_school_registrar_officer" />
 					<button class="oe_highlight oe_stat_button"
 						name="set_terminate" string="Terminate" type="object"
@@ -889,15 +889,20 @@
 								<field name="program_id" placeholder="Program"
 									required="1"
 									options="{'no_create_edit': True,'no_create': True,'no_open': True}" />
+
 								<field name="medium_id" placeholder="Shift"
-									options="{'no_create_edit': True,'no_create': True,'no_open': True}" />
+									options="{'no_create_edit': True,'no_create': True,'no_open': True}" domain="[('program','=',program_id)]"/>
+
 								<field name="semester_id"
 									domain="[('standard_id','=',program_id)]" required="1"
 									options="{'no_create_edit': True,'no_create': True,'no_open': True}" />
+									
+
 								<field name="standard_id" placeholder="Class"
 									domain="[('school_id','=',school_id),('medium_id','=',medium_id),('standard_id','=',program_id),('semester_id','=',semester_id),('state','!=','close')]"
 									attrs="{'invisible':[('state','not in',['invoiced','done','alumni','terminate']),('is_class','!=',True)]}"
 									options="{'no_create_edit': True,'no_create': True,'no_open': True}" />
+
 								<field name="is_class" invisible="1" />
 								<field name="division" placeholder="Class Room"
 									attrs="{'invisible':[('state','not in',['invoiced','done','alumni']),('is_class','!=',True)]}"

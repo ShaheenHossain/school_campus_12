@@ -226,11 +226,12 @@ class SchoolTeacherTransfer(models.Model):
 	state = fields.Selection([('draft','New'),
 		('done','Upgraded to Examiner'),
 		('reject','degrade to teacher')], index='true', default='draft')
-
+#developer2
 	@api.depends('user_id')
 	def _depends_teacher(self):
 		if self.user_id:
 			self.school_id=self.user_id.school_id.id
+
 			# raise UserError(str(self.user_id.school_id))
 	@api.multi
 	def unlink(self):

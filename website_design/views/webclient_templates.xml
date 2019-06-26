@@ -9,6 +9,8 @@
             <script type="text/javascript" src="/website_design/static/src/js/website_design.js"></script>
             <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
             <script type="text/javascript" src="/website_design/static/src/js/bootstrap-datepicker.js"></script>
+            <script type="text/javascript" src="/website_design/static/src/js/pie.js"></script>
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
    	 	</xpath>
     </template>
 
@@ -217,13 +219,14 @@
             </div>
 
             <ul class="list-unstyled components">
+                <t t-if="request.env.user.user_type == 'student'">
                 <li class="active">
                     <a href="/">
                         <i class="fa fa-dashboard"></i>
                         Dashboard
                     </a>
                 </li>
-                <t t-if="request.env.user.user_type == 'student'">
+               
                     <li>
                         <a href="#">
                             <i class="fa fa-graduation-cap"></i>
@@ -319,20 +322,105 @@
                             Tomorrow's Topic
                         </a>
                     </li>
+                    
                     <li>
-                        <a href="#">
-                            <i class="fa fa-table"></i>
+                        <a href="#timetableMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="fa fa-money"></i>
                             Time Table
                         </a>
+                        <ul class="collapse list-unstyled" id="timetableMenu">
+                            <li>
+                                <a href="#">Class Time Table</a>
+                            </li>
+                            <li>
+                                <a href="#">Exam TImetable</a>
+                            </li>
+                           
+                        </ul>
                     </li>
+                    <li>
+                        <a href="/teacher/tomorrowsTopic">
+                            <i class="fa fa-newspaper-o"></i>
+                            My Attendance
+                        </a>
+
+                    </li>
+                    <li>
+                        <a href="#myLeaves" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="fa fa-calendar"></i>
+                            Leaves
+                        </a>
+                        <ul class="collapse list-unstyled" id="myLeaves">
+                            <li>
+                                <a href="#">My Leaves</a>
+                            </li>
+                            <li>
+                                <a href="#">Leave Request</a>
+                            </li>
+                           
+                        </ul>
+
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-paypal"></i>
+                            My Payroll
+                        </a>
+                    </li>
+                     <li>
+                        <a href="/teacher/employeeRequest">
+                            <i class="fa fa-money"></i>
+                            Advance Salary Request
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-lock"></i>
+                            Resignation Request
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-exchange"></i>
+                            Transfer Request
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-ticket"></i>
+                            IT Ticketing
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-weixin"></i>
+                            Discuss
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-newspaper-o"></i>
+                            Gravience
+                        </a>
+                    </li>
+
                 </t>
             </ul>
+
+
+
+
         </nav>
 	</template>
-    <template id="student_dashboard" name="Student Dashboard">
+
+    <template id="student_dashboard" name="Dashboard">
+
+
         <t t-call="website.layout">
             <div id="wrap" class="custom_wrap">
                 <t t-call="website_design.DrawerSidebar" />
+                <t t-if="request.env.user.user_type == 'student'">
+
                 <div class="container">
                     <div>
                         <h1>Dashboard</h1>
@@ -571,8 +659,253 @@
                         </div>
                     </div>
                 </div>
+            </t>
+
+                <t t-if="request.env.user.user_type == 'teacher'">
+
+                <div class="container">
+                    <div>
+                        <h1>Dashboard</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="card card-default">
+                                <div class="card-body card-7-5">
+                                    <h4>My Attendance</h4>
+                                    <div id="piechart" style="width: 1000px; height: 300px;"></div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- div class="col-sm-6">
+                            <div class="card card-default">
+                                <div class="card-body card-7-5">
+                                    <h4>My Next Class Update</h4>
+                                    <h6 class="text-muted">Your tomorrow lesson update</h6>
+                                    <div id="topic_lines" t-if="tomorrows_topic">
+                                        <div class="row row_bottom_border" t-foreach="tomorrows_topic" t-as="topic">
+                                            <div class="col-sm-2">
+                                                <div style="padding: 0px 15px;">
+                                                    <img src="/website_design/static/src/img/img_avatar.png" alt="Avatar" class="avatar"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <div style="text-transform: uppercase;">
+                                                    <t t-esc="topic.get('content')" />
+                                                </div>
+                                                <div>
+                                                    <div class="col-sm-4">
+                                                        <h6>Teacher: <t t-esc="topic.get('teacher')" /></h6>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <h6>Date: <t t-esc="topic.get('topic_date')" /></h6>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <h6>class: <t t-esc="topic.get('class')" /></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <!-- <div class="row">
+                        <div class="card card-default">
+                            <div class="card-body card-7-5">
+                                <h4>Fees Details</h4>
+                                <div class="table-responsive">
+                                    <table class="table" id="DTBasic">
+                                        <tr>
+                                            <th>Application No.</th>
+                                            <th>Student Name</th>
+                                            <th>Course Level</th>
+                                            <th>Fees Type</th>
+                                            <th>Date</th>
+                                            <th>Programm</th>
+                                            <th>Status</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Meli/HR/24</td>
+                                            <td>Ali Ansari</td>
+                                            <td>Pre Beginner</td>
+                                            <td>Monthly</td>
+                                            <td>12/03/2019</td>
+                                            <td>1 Year Diploma</td>
+                                            <td>Paid</td>
+                                            <td>2050</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Meli/HR/24</td>
+                                            <td>Ali Ansari</td>
+                                            <td>Pre Beginner</td>
+                                            <td>Monthly</td>
+                                            <td>12/03/2019</td>
+                                            <td>1 Year Diploma</td>
+                                            <td>Paid</td>
+                                            <td>2050</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Meli/HR/24</td>
+                                            <td>Ali Ansari</td>
+                                            <td>Pre Beginner</td>
+                                            <td>Monthly</td>
+                                            <td>12/03/2019</td>
+                                            <td>1 Year Diploma</td>
+                                            <td>Paid</td>
+                                            <td>2050</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Meli/HR/24</td>
+                                            <td>Ali Ansari</td>
+                                            <td>Pre Beginner</td>
+                                            <td>Monthly</td>
+                                            <td>12/03/2019</td>
+                                            <td>1 Year Diploma</td>
+                                            <td>Paid</td>
+                                            <td>2050</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card card-default">
+                            <div class="card-body card-7-5">
+                                <div class="row">
+                                    <div class="col-md-4"><h4>My Class Schedule</h4></div>
+                                    <div class="col-md-4"><h4 class="text-center">Monthly Time Table</h4></div>
+                                    <div class="col-md-4"><h4 class="text-center">For the Course: PreBeginner</h4></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Programm: One Year Diploma
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Class: KN/SB/EM/A
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Room Number: 1-40
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Course Level: Base One
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Shift: Morning One
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Total Periods: 2
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                First Period Time: 6 to 7 am
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                First Period Time: 7 to 7:55 am
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card card-default">
+                                            <div class="card-body card-7-5">
+                                                Starting Date: 06/01/1398
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- <div class="row">
+                        <div class="card card-default">
+                            <div class="card-body card-7-5">
+                                <div class="table-responsive">
+                                    <table class="table timetable" id="DTBasic">
+                                        <thead>
+                                            <tr>
+                                                <th>Week Days</th>
+                                                <th>First Period</th>
+                                                <th>Subject Name</th>
+                                                <th>Second Period</th>
+                                                <th>Subject Name</th>
+                                                <th>Faculty Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Monday</td>
+                                                <td>English</td>
+                                                <td>G</td>
+                                                <td>English</td>
+                                                <td>A</td>
+                                                <td>Ibadullah</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Monday</td>
+                                                <td>English</td>
+                                                <td>G</td>
+                                                <td>English</td>
+                                                <td>A</td>
+                                                <td>Ibadullah</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Monday</td>
+                                                <td>English</td>
+                                                <td>G</td>
+                                                <td>English</td>
+                                                <td>A</td>
+                                                <td>Ibadullah</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </t>
             </div>
         </t>
+   
+            
+        
+
     </template>
     <template id="leaveRequest" name="Leave Request">
         <t t-call="website.layout">
@@ -588,7 +921,7 @@
                                 <div class="card-body card-7-5">
                                     <h4>Leave Request Form</h4>
                                     <div>
-                                        <form role="form" t-attf-action="/student/saveLeaveRequest" method="post">
+                                        <form role="form" t-attf-action="/student/" method="post">
                                             <div class="row">
                                                 <div class="form-group col-md-3">
                                                     <label for="application_number">Application No.</label>
@@ -650,6 +983,87 @@
             </div>
         </t>
     </template>
+    <template id="employeeRequest" name="Employee Request">
+        <t t-call="website.layout">
+            <div id="wrap" class="custom_wrap">
+                <t t-call="website_design.DrawerSidebar" />
+                <div class="container">
+                    <div>
+                        <h1>Dashboard / Leaves</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-default">
+                                <div class="card-body card-7-5">
+                                    <h4>Leave Request Form</h4>
+                                    <div>
+                                        <form role="form" t-attf-action="/teacher/" method="post">
+                                            <div class="row">
+                                                <div class="form-group col-md-3">
+                                                    <label for="application_number">Application No.</label>
+                                                    <input type="text" class="form-control" id="application_number" placeholder="Application No."/>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label for="student_name">Student Name*</label>
+                                                    <input type="text" class="form-control" id="student_name" required="required" placeholder="Student Name"/>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label for="course_level">Course Level*</label>
+                                                    <input type="text" class="form-control" id="course_level" required="required" placeholder="Course Level"/>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label for="phone_number">Phone Number</label>
+                                                    <input type="text" class="form-control" id="phone_number" placeholder="Phone Number"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <!--<div class="form-group col-md-6">-->
+                                                    <!--<label for="from_date">From Date*</label>-->
+                                                    <!--<input type="text" class="form-control datepicker" id="from_date" placeholder="From Date" required="required"/>-->
+                                                <!--</div>-->
+                                                <div class="form-group col-md-6">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control datepicker" id="from_date" placeholder="From Date" required="required"/>
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control datepicker" id="to_date" placeholder="To Date" required="required"/>
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <label for="reason_for_leave">Reason For Leave</label>
+                                                    <textarea class="form-control" id="reason_for_leave" rows="3" placeholder="Reason For Leave"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <button type="submit" name="submit" class="btn btn-primary">Apply</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+
+
+
+
     <template id="feedBackFrom" name="Feedback">
         <t t-call="website.layout">
             <div id="wrap" class="custom_wrap">
@@ -857,7 +1271,7 @@
                             <div class="card card-default">
                                 <div class="card-body card-7-5">
                                     <div>
-                                        <form role="form" t-attf-action="/teacher/saveTomorrowsTopic" method="post">
+                                        <form role="form" t-attf-action="/teacher/saveTomorrow'sTopic" method="post">
                                             <div class="row">
                                                 <div class="form-group col-md-3">
                                                     <label for="topic_date">Date</label>

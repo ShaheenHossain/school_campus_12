@@ -22,14 +22,14 @@ class StudentStudent(models.Model):
 
 	ticket_test = fields.Many2one('website.support.ticket',string="Enq. Number", domain="[('status', '=', 'add-application')]")
 	
-	@api.onchange('ticket_test')
-	def remoove_online_enquiry(self):
-		res=self.ticket_test.ticket_no
-		if res:
-			self.state=='done'
-			print 'eeeeeeeeeeeeeeeeee'
-		else:
-			print 'rrrrrrrrrrrrrrrrr'
+	# @api.onchange('ticket_test')
+	# def remoove_online_enquiry(self):
+	# 	res=self.ticket_test.ticket_no
+	# 	if res:
+	# 		self.state=='done'
+	# 		print 'eeeeeeeeeeeeeeeeee'
+	# 	else:
+	# 		print 'rrrrrrrrrrrrrrrrr'
 
 
 		

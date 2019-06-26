@@ -1,0 +1,54 @@
+
+<odoo>
+    <record model="ir.ui.view" id="way2sms_form">
+        <field name="name">waysmstree</field>
+        <field name="model">way.way</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="way2sms">
+        <header>
+              <button name="sendSms" type="object" String="send SMS"
+                class="oe_highlight" icon="fa-commenting-o" confirm="Are you sure want to send sms"
+                attrs="{'invisible':[('date_time','!=',False)]}"
+                help="this button will send an sms " />
+        </header>
+        <sheet>
+        <separator string="SMS" />
+        <group string="Way2SMS" style="width: 40%%" col="2"
+        colspan="2">
+            <field name="user_acc" />
+            <field name="number" />
+            <field name="message" />
+            <field name="date_time"/>
+        </group>
+        </sheet>
+        </form>
+        </field>
+  </record>
+
+  <record model="ir.ui.view" id="way2sms_tree">
+        <field name="name">way2smstree</field>
+        <field name="model">way.way</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+        <tree string="way2smstree">
+            <field name="user_acc" />
+            <field name="number" />
+            <field name="message" />
+            <field name="date_time"/>
+        </tree>
+        </field>
+  </record>
+
+  <record model="ir.actions.act_window" id="action_waysms_views_base">
+    <field name="name">way2sms_details</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="res_model">way.way</field>
+  </record>
+
+  <menuitem name="WaySMS_service" icon="terp-project" id="WaySMS" />
+  <menuitem name="Way2_sms" parent="WaySMS" id="waysms_child" />
+  <menuitem name="Way2_SMS" parent="waysms_child" id="waysms_child2"
+   action="action_waysms_views_base" />
+ </odoo>

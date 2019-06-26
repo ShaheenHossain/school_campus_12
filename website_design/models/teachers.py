@@ -34,6 +34,7 @@ class TomorrowsTopic(models.Model):
     @api.model
     def get_topics(self):
         user = self.env.user
+        print user.user_type,"pppppppppppppppppppppppppppppp"
         vals = []
         if user.user_type == "student":
             student = self.env['student.student'].search([('name', '=', user.name)])

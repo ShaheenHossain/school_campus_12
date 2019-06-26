@@ -33,8 +33,12 @@
             'report/report.xml',
             'report/contract_report_template.xml',
             'views/AutoGenerateEmailTemplate.xml',
-            'views/help_desk_view.xml',
+            # 'views/help_desk_view.xml',
             'views/menuitem.xml',
+            'views/employee_complaint_form.xml',
+            'views//hr_recritment_inherit.xml',
+            'views/employee_deciplane_view.xml',
+            
             ],
 
     'demo': [],

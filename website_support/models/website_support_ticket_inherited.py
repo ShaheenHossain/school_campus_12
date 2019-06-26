@@ -22,6 +22,26 @@ class Enquiries_inherited(models.Model):
 
 
 
+
+	@api.multi
+	def name_get(self):
+		res = super(Enquiries_inherited, self).name_get()
+		result=[]
+		for x in self:
+			display_value=""
+			display_value += x.name or ""
+			display_value += ' ['
+			display_value += x.ticket_no or ""
+			display_value += ']'
+			print display_value,"4444444444444444444444"
+
+			
+		 	result.append((x.id,display_value))
+		return result
+
+
+
+
 	@api.model
 	def create(self, vals):
 		if vals.get('ticket_no', _('New')) == _('New'):

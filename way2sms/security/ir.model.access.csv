@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_waysms_admin,access_way_admin,model_way_base,group_sms,1,1,1,1
+access_waysms_user,access_wasy_user,model_way_base,group_sms,1,1,1,0
+access_waysms_admin_1,access_way_admin_1,model_way_way,group_sms,1,1,1,1
+access_waysms_user_1,access_wasy_user_1,model_way_way,group_sms,1,1,1,0

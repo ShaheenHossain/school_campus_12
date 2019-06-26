@@ -1033,9 +1033,9 @@ class Holidays(models.Model):
 	def onchange_company_id(self):
 		self.company_id = self.employee_id.company_id
 
-	date_from = fields.Datetime('Start Date', readonly=True, index=True, copy=False,
+	date_from = fields.Date('Start Date', readonly=True, index=True, copy=False,
 		states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_start_time)
-	date_to = fields.Datetime('End Date', readonly=True, copy=False,
+	date_to = fields.Date('End Date', readonly=True, copy=False,
 		states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_end_time)
 
 	# Developer1 Date From Field Mandatory Validations

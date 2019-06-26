@@ -164,7 +164,7 @@ class StudentStudent(models.Model):
 		else:
 			action['views'] = [(self.env.ref('school.student_withdrawal_request_menu_form').id, 'form')]
 		return action
-
+#Developer 2
 	@api.multi
 	@api.depends('date_of_birth')
 	def _compute_student_age(self):
@@ -222,6 +222,22 @@ class StudentStudent(models.Model):
 			# c= open("/home/bassam5/error.txt", "a")
 			# c.write(str(qrcode_img+'------------'+self.student_code+'///////////'))
 			# c.close()
+
+	# @api.onchange('program_id')
+	# def filtering_shift(self):
+	# 	fe=self.env['standard.medium'].search([])
+	# 	for x in fe:
+	# 		x.program.name,"6666666666666666666666666666666"
+			# if self.program_id.name==x.program.name:
+			# 	if 
+			# else:
+			# 	pass
+
+
+
+
+
+
 
 
 	@api.model
@@ -414,6 +430,7 @@ class StudentStudent(models.Model):
 
 	admission_date = fields.Date('Application Date', default=lambda self: fields.Date.today())
 	admission_donedate = fields.Date('Admission Date')
+
 	expired_date = fields.Date('Expired Date')
 	temp_name = fields.Char('Name', compute='_copy_name',
 						 states={'done': [('readonly', True)]})
@@ -521,6 +538,7 @@ class StudentStudent(models.Model):
 	permanent_state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict',store=True)
 	permanent_country_id = fields.Many2one('res.country', string='Country', ondelete='restrict',store=True,default=lambda self: self.env['res.country'].browse([(3)]))
 	program_id = fields .Many2one('standard.standard',"Program")
+	# program_shift =fields.Many2one('standard.medium',"Shift")
 	remaining_seats = fields.Integer("Available Seats")
 	app_no = fields.Char('Application No', required=True,
 					  default=lambda self: _('New'),
@@ -539,6 +557,33 @@ class StudentStudent(models.Model):
 		('nid_unique', 'unique(nid)',
 		 'Nid/Tazkira number should be unique!'),
 	]	
+
+ 	@api.onchange('program_id')
+ 	def get_shifts(self):
+ 		print "6666666666666666666666666666666666"
+ 		print self.program_id,"222222222222222222222"
+ 		rec=self.env['standard.medium'].search([])
+ 		# dict_names={}
+ 		# count=1
+ 		# for x in rec:
+ 		# 	if x.program.name==self.program_id.name:
+ 		# 		dict_names = x.read(['name'])
+ 		# print dict_names,"11111111111111111"
+
+ 		list_names=[]
+ 		for x in rec:
+ 			if x.program.name==self.program_id.name:
+ 				list_names.append(x.name)
+
+
+ 				
+
+
+	
+				
+
+			
+
 
 	@api.onchange('is_same_address')
 	def _same_address(self):
@@ -656,18 +701,25 @@ class StudentStudent(models.Model):
 		for x in de:
 			if self.stu_name==x.student_id.stu_name:
 				if x.state=="paid":
+					self.admission_donedate=datetime.now()
 					self.write({'state':'done'})
 
-	# @api.constrains('state')
-	# def change_fee_status(self):
-	# 	fe=self.env['student.payslip'].search([])
-	# 	for x in fe:
-	# 		if self.stu_name==x.student_id.stu_name:
-	# 			if x.state=='paid':
-	# 				self.write({'state':'invoiced'})
+	
 
 
-		
+	@api.onchange('program_id','medium_id','semester_id')
+	def get_values(self):
+		print "3333333333333333333333333"
+		rec=self.env['school.standard'].search([('standard','=',self.standard_id.standard)])
+		print rec,"1111111111111"
+		count=1
+		for obj in rec.student_ids:
+			count += 1
+
+		self.roll_no = count
+
+
+	
 
 
 

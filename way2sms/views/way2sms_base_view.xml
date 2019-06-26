@@ -1,0 +1,45 @@
+
+<odoo>
+    <record model="ir.ui.view" id="way2sms_base_form">
+        <field name="name">waysmsbaseform</field>
+        <field name="model">way.base</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="way2sms">
+        
+        <sheet>
+        <separator string="SMS Base" />
+        <group string="Way2SMS" style="width: 40%%" col="2"
+        colspan="2">
+            <field name="user_name" />
+            <field name="password" password="True"/>
+        </group>
+        </sheet>
+        </form>
+        </field>
+  </record>
+
+  <record model="ir.ui.view" id="way2sms_base_tree">
+        <field name="name">way2smsbasetree</field>
+        <field name="model">way.base</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+        <tree string="way2smsbasetree">
+            <field name="user_name" />
+            <field name="password" password="True"/>
+        </tree>
+        </field>
+  </record>
+
+  <record model="ir.actions.act_window" id="action_waysms_views_base_settings">
+    <field name="name">way2sms_Base_details</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="res_model">way.base</field>
+  </record>
+
+  <menuitem name="Way2_SMS_config" parent="WaySMS" id="waysms_base" 
+   action="action_waysms_views_base_settings" />
+   
+ </odoo>
+ 

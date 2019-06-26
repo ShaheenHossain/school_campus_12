@@ -3,7 +3,7 @@
         <record id="recruitment_stage_email_template" model="mail.template">
             <field name="name">Test Template</field>
             <field name="email_from">${}</field>
-            <field name="subject">Invitation to ${object.last_stage_id.name}</field>
+            <field name="subject">Invitation to ${object.next_round}</field>
             <field name="email_to">${object.email_from | safe}</field>
             <field name="lang">${object.lang}</field>
             <field name="model_id" ref="model_hr_applicant"/>
@@ -30,9 +30,7 @@
 
                                 Dear ${object.partner_name},<br/><br/>
 
-                                &nbsp; &nbsp; &nbsp;Thank you for taking the time to talk to us about the ${object.categ_ids.name} position. We enjoyed getting to know you and we’d like to invite you for a ${object.last_stage_id.name} interview at our office.<br/><br/>
-
-                                Your interview will be with ${object.last_stage_id.interviewer_name.name}(${object.last_stage_id.interviewer_designation}) and will last approximately [X] minutes. [if applicable: mention what the purpose of the interview is, e.g. to complete a test or discuss a given assignment.]<br/><br/>
+                                &nbsp; &nbsp; &nbsp;Thank you for taking the time to talk to us about the ${object.categ_ids.name} position. We enjoyed getting to know you and we’d like to invite you for a ${object.next_round} interview at our office.<br/><br/>
 
                                 Would you be available on ${object.date_action}? Please let me know if another date or time would work best for you.<br/><br/>
 

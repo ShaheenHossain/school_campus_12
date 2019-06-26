@@ -193,9 +193,13 @@ class StandardMedium(models.Model):
 	code = fields.Char('Code', required=True)
 	standard_id = fields.Many2one('standard.standard',"Program")
 	description = fields.Text('Description')
-	hour_from = fields.Float('Time From')
-	hour_to = fields.Float('Time To')
+	hour_from = fields.Float(string='Time From')
+	hour_to = fields.Float(string='Time To')
+	
 	program=fields.Many2one('standard.standard',string="Program")
+
+
+
 
 
 	# @api.depends('hour_from','hour_to')
@@ -212,6 +216,17 @@ class StandardMedium(models.Model):
 
 	from_hour = fields.Char("Time From")
 	to_hour = fields.Char("Time To")
+
+
+
+
+
+	
+	
+
+
+
+
 
 	@api.onchange('hour_from','hour_to')
 	def _onchange_time(self):
@@ -259,7 +274,6 @@ class StandardMedium(models.Model):
 		else:
 			time = str(int(var[:1]) + 12) + var[1:4] if var[:2].find(':') != -1 else str(int(var[:2]) + 12) + var[2:8]
 		return time	
-			
 	@api.model
 	def create(self, vals):
 		if vals.get('sequence', _('New')) == _('New'):
@@ -288,7 +302,28 @@ class StandardDivision(models.Model):
 		if vals.get('sequence', _('New')) == _('New'):
 			vals['sequence'] = self.env['ir.sequence'].next_by_code('student.division') or _('New')
 		result = super(StandardDivision, self).create(vals)
+
 		return result
+
+		#DEVELOPER2
+class course_shift(models.Model):
+	_name = "standard.shift"
+
+
+	serial=fields.Char(string="Serial Number")
+	code=fields.Char(string="Code")
+	name=fields.Char(string="Name")
+	time_from=fields.Float(string="Time From")
+	time_to=fields.Float(string="Time To")
+	standard_id = fields.Many2one('standard.standard',"Program")
+
+
+
+
+
+
+
+
 
 class BookBook(models.Model):
 	_name = "book.book"
@@ -296,6 +331,7 @@ class BookBook(models.Model):
 	name = fields.Char('Book Name')
 	program_id = fields.Many2one('standard.standard', string="Program")
 	semester_ids = fields.Many2one('standard.semester', string="Semester")
+	shift_ids=fields.Many2one('standard.medium',string='Shifts')
 	
 
 class StandardSemester(models.Model):
@@ -336,8 +372,9 @@ class StandardStandard(models.Model):
 	code = fields.Char('Code', required=True)
 	semester_ids = fields.One2many('standard.semester', 'standard_id',
 								  'Course Level')
+
 	description = fields.Text('Description')
-	shift=fields.One2many('standard.medium','standard_id')
+	shift_ids=fields.One2many('standard.shift','standard_id','Shifts')
 
 	is_shift = fields.Selection([
 		('yes', 'Yes'),
@@ -727,6 +764,35 @@ class SchoolStandard(models.Model):
 			if data.id:
 				raise UserError(_('You cannot delete this document.'))
 		return super(SchoolStandard, self).unlink()		
+  
+
+	@api.onchange('end_date')
+	# def calculate_duration(self):
+	# 	if self.end_date!=False:
+
+	# 		d1=datetime.strptime(self.start_date, '%Y-%m-%d')
+	# 		d2=datetime.strptime(self.end_date, '%Y-%m-%d')
+	# 		delta=d2-d1
+	# 		print delta.days,"000000000000000000000000000"
+
+
+	@api.onchange('division_id')
+	def onchange_class_room(self):
+		data=self.env['school.standard'].search([])
+		for rec in data:
+			if self.division_id.name==rec.division_id.name:
+				if rec.end_date!=False:
+					d=datetime.date(datetime.now())
+					d2=datetime.strptime(rec.end_date, '%Y-%m-%d')
+					d3=datetime.strptime(str(d), '%Y-%m-%d')
+					delta=d2-d3
+					raise UserError(_('In This Class Room Already Class Is GOing On."%s" days Left')%(delta.days))
+			# if rec.start_date  <= self.start_date <= rec.end_date or rec.start_date  <= self.end_date <= rec.end_date:
+			# 	print "ttytytytytyt"
+
+
+
+
 
 	
 class ClassSequence(models.Model):
@@ -1316,7 +1382,7 @@ class StudentWithdrawal(models.Model):
 
 	state = fields.Selection([('draft','New'),
 		('in progress','In Progress'),
-		('alumni','Alumni'),
+		('accept','Accepted'),
 		('terminate','Terminated'),
 		('rejected','Rejected')], index='true', default='draft')
 
@@ -1358,8 +1424,8 @@ class StudentWithdrawal(models.Model):
 
 	@api.multi
 	def set_close(self):
-		self.student_name.set_alumni()
-		self.write({'state': 'alumni'})
+		# self.student_name.set_alumni()
+		self.write({'state': 'accept'})
 
 	@api.multi
 	def set_terminate(self):
@@ -1381,11 +1447,13 @@ class TeacherTransfer(models.Model):
 	_order = "date desc"
 
 	date = fields.Date('Date')
-
+	
 	teacher_id = fields.Many2one('school.teacher', 'Teacher')
 	from_campus = fields.Char("Current Campus",compute='_compute_teacher_transfer', store=True)
 	school_id = fields.Many2one('school.school', "To Campus")
 	reason = fields.Text("Reason")
+	to_address=fields.Char("To Address",compute='_compute_campus_address', store=True)
+
 
 	state = fields.Selection([('draft','New'),
 		('in progress','In Progress'),
@@ -1404,7 +1472,15 @@ class TeacherTransfer(models.Model):
 	def _compute_teacher_transfer(self):
 		if self.teacher_id:
 			self.from_campus = self.teacher_id.school_id.name
+	
 			self.date=datetime.now()
+	@api.depends('school_id')
+	def _compute_campus_address(self):
+		if self.school_id:
+			self.to_address=self.school_id.street
+
+
+
 
 	@api.multi
 	def set_start(self):
@@ -1423,8 +1499,18 @@ class TeacherTransfer(models.Model):
 
 	@api.multi
 	def set_close(self):
+		
+		
 		if self.school_id:
+
+	
 			self.teacher_id.school_id = self.school_id
+			self.teacher_id.address_id.name=self.to_address 
+		rec=self.env['hr.employee'].search([('name','=',self.teacher_id.name)])
+		if rec.school_id:
+			rec.school_id=self.school_id
+			rec.address_id.name=self.to_address
+		
 		teacher_var = self.env['school.teacher'].search([('id','=',self.teacher_id.id)])
 		teacher_var_list = []
 		if teacher_var:
@@ -1435,9 +1521,12 @@ class TeacherTransfer(models.Model):
 				'teacher_date' : self.date,
 				'teacher_reason': self.reason,
 					}
+			
 			teacher_var_list.append(ele)
 		# raise UserError(str(ele))
+		
 		teacher_var.teacher_transfer_ids = teacher_var_list
+		
 		# variable.stud_name = self.student_name.id
 
 		self.write({'state': 'approve'})
@@ -1475,6 +1564,7 @@ class StaffTransfer(models.Model):
 			self.staff_work_location = self.staff_id.work_location
 			self.staff_job_id = self.staff_id.job_id
 			self.current_company_id = self.staff_id.school_id.id
+			print self.staff_id.school_id.name,"11111111111"
 
 	@api.multi
 	def set_start(self):
@@ -1496,8 +1586,9 @@ class StaffTransfer(models.Model):
 	@api.multi
 	def set_close(self):
 		if self.cmp_id:
+			
 			self.staff_id.school_id = self.cmp_id
-			self.staff_id.work_location = self.cmp_id.name
+			self.staff_id.work_location = self.staff_work_location
 			self.staff_id.address_id = self.cmp_id.partner_id.id
 
 		staff_var = self.env['hr.employee'].search([('id','=',self.staff_id.id)])
@@ -1512,8 +1603,7 @@ class StaffTransfer(models.Model):
 			staff_var_list.append(ele)
 		# raise UserError(str(ele))
 		staff_var.employee_line_ids = staff_var_list
-		# variable.stud_name = self.student_name.id
-
+		
 		self.write({'state': 'approve'})
 
 	@api.multi
@@ -1541,6 +1631,18 @@ class StudentReminder(models.Model):
 	date = fields.Datetime('Date')
 	description = fields.Text('Description')
 	color = fields.Integer('Color Index', default=0)
+	program =fields.Char(string="Program")
+	class_id=fields.Char(string='Class')
+	campus =fields.Char(string="Campus")
+	shift=fields.Char(string='Shift')
+
+	@api.onchange('stu_id')
+	def remainder_details(self):
+		if self.stu_id:
+			self.class_id=self.stu_id.standard_id.name
+			self.campus=self.stu_id.school_id.name
+			self.shift=self.stu_id.medium_id.name
+			self.program=self.stu_id.program_id.name
 
 
 class StudentCast(models.Model):

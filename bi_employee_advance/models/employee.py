@@ -18,15 +18,16 @@ class BiEmployeeSalary(models.Model):
 
 	@api.model
 	def _needaction_domain_get(self):
-		employees = self.env['hr.employee'].search([])
-		for employee in employees:
-			if self.env.user.name == employee.name:
-				if employee.manager == True:
-					return [('state', '=', 'request')]
-				if employee.ceo == True:
-					return [('state','=','hr_approve')]
-				if employee.finance == True:
-					return [('state','=','approve')]
+		return [('state','in',('hr_manager','finance_manager','ceo'))]
+		# employees = self.env['hr.employee'].search([])
+		# for employee in employees:
+		# 	if self.env.user.name == employee.name:
+		# 		if employee.manager == True:
+		# 			return [('state', '=', 'request')]
+		# 		if employee.ceo == True:
+		# 			return [('state','=','hr_manager')]
+		# 		if employee.finance == True:
+		# 			return [('state','=','finance_manager')]
 
 
 	def _get_employee_id(self):
@@ -37,11 +38,11 @@ class BiEmployeeSalary(models.Model):
 	name = fields.Char(string="Sequence No", required=True, Index= True, default=lambda self:('New'), readonly=True)
 	state = fields.Selection([
 		('draft', 'Draft'),
-		('request', 'Request'),
+		('hr_manager', 'Hr Approve'),
+		('finance_manager','Finance Approve'),
+		('ceo','CEO Approve'),
+		('approve','Approved'),
 		('reject', 'Rejected'),
-		('hr_approve', 'Waiting for Approve'),
-		('approve', 'Approval'),
-		('paid', 'Paid'),
 		], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
 
 	employee_id = fields.Many2one('hr.employee', string = "Employee",required=True,readonly=True,states={'draft': [('readonly', False)]}, default=_get_employee_id)
@@ -53,15 +54,16 @@ class BiEmployeeSalary(models.Model):
 	ceo_approve_date = fields.Date(string="CEO Approval Date", readonly=True)
 	confirm_manager = fields.Many2one('res.users',string="Confirm Manager",readonly=True)
 	ceo_name = fields.Many2one('hr.employee',string="CEO")
-	note = fields.Text(string="Reason",readonly=True,states={'draft': [('readonly', False)]})         
+	note = fields.Text(string="Employee Note",readonly=True,states={'draft': [('readonly', False)]})         
 	company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('bi.employee.salary'),readonly=True,states={'draft': [('readonly', False)]})
 	account_no = fields.Char("Account Number")
 	ifsc_code = fields.Char("Ifsc Code")
-	department_id = fields.Char("Department")
-	manager_note = fields.Text(string="HR Remark", readonly=True, states={'request': [('readonly', False)]})
-	ceo_note = fields.Text(string="CEO Remark", readonly=True, states={'hr_approve': [('readonly', False)]})
+	department_id = fields.Char("Department",readonly=True,states={'draft': [('readonly', False)]})
+	manager_note = fields.Text(string="HR Remark", readonly=True, states={'hr_manager': [('readonly', False)]})
+	finance_note = fields.Text(string="Finance Manager Remark",readonly=True, states={'finance_manager': [('readonly', False)]})
+	ceo_note = fields.Text(string="CEO Remark", readonly=True, states={'ceo': [('readonly', False)]})
 	conditions_box = fields.Boolean(string="Conditions Not Applied", readonly=True, states={'request': [('readonly', False)]},default=False)
-	
+	salary_deduction=fields.Selection([('1','1'),('2','2'),('3','3')],string='Installments',readonly=True,states={'draft': [('readonly', False)]})
 	@api.onchange('employee_id')
 	def onchange_employee_id(self):
 		if self.employee_id:
@@ -87,6 +89,10 @@ class BiEmployeeSalary(models.Model):
 		return True
 
 
+	
+
+
+
 
 
 	@api.model
@@ -103,19 +109,31 @@ class BiEmployeeSalary(models.Model):
 	
 	@api.multi
 	def button_request(self):
+	
+		rec=self.env['hr.contract'].search([('employee_id.name','=',self.employee_id.name)])
+	
+		if rec.trial_date_start < self.request_date and rec.trial_date_end > self.request_date:
+			raise UserError(_('Your Trail Period Is Not Completed'))
+
 		if self.employee_id.advance_salary_access == True:
 			self.employee_id.advance_salary_access = False
 			date = datetime.date(datetime.now())
 			activate_date =  date + relativedelta.relativedelta(days=180)
 			self.employee_id.advance_salary_date = activate_date
 
-			if self.employee_id.manager == True:
-				return self.write({'state': 'hr_approve'})
-			return self.write({'state':'request'})
+			
 
+			# if self.employee_id.manager == True:
+			# 	return self.write({'state': 'hr_manager'})
+			return self.write({'state':'hr_manager'})
 		if self.employee_id.advance_salary_access == False:
 			print self.employee_id.advance_salary_date,"2222222222222"
+
 			raise UserError('Dear Employee You are Not Eligible for Advance Salary. Please Contact Your Manager')
+
+			
+		
+			
 
 		# if self.conditions_box == True:
 		# 	year_start = datetime.now().strftime('%Y-01-01')
@@ -164,7 +182,7 @@ class BiEmployeeSalary(models.Model):
 		self.write({
 			'confirm_date':fields.Date.today(),
 			'confirm_manager':self.env.user.id,
-			'state': 'hr_approve'})
+			'state': 'finance_manager'})
 					
 
 
@@ -172,12 +190,12 @@ class BiEmployeeSalary(models.Model):
 	def button_finance_approve(self):
 		
 		print "111111111111111111111"
-		employee = self.env.ref('bi_employee_advance.advance_salary_approved_employee')
-		manager = self.env.ref('bi_employee_advance.advance_salary_approved_manager')
-		finance = self.env.ref('bi_employee_advance.advance_salary_approved_finance')
-		self.env['mail.template'].browse(employee.id).send_mail(self.id, force_send=True)
-		self.env['mail.template'].browse(manager.id).send_mail(self.id, force_send=True)
-		self.env['mail.template'].browse(finance.id).send_mail(self.id, force_send=True)
+		# employee = self.env.ref('bi_employee_advance.advance_salary_approved_employee')
+		# manager = self.env.ref('bi_employee_advance.advance_salary_approved_manager')
+		# finance = self.env.ref('bi_employee_advance.advance_salary_approved_finance')
+		# self.env['mail.template'].browse(employee.id).send_mail(self.id, force_send=True)
+		# self.env['mail.template'].browse(manager.id).send_mail(self.id, force_send=True)
+		# self.env['mail.template'].browse(finance.id).send_mail(self.id, force_send=True)
 		
 		# Find the e-mail template
 		# requester = self.env.ref('bi_employee_advance.ceo_to_requester_email')
@@ -187,14 +205,14 @@ class BiEmployeeSalary(models.Model):
 		# self.env['mail.template'].browse(finance_manager.id).send_mail(self.id)
 		self.write({
 			'ceo_approve_date':fields.Date.today(),
-			'state':'approve'})
+			'state':'ceo'})
 
 
 	@api.multi
-	def button_paid(self):		
+	def button_ceo_approve(self):		
 		self.write({
 			'paid_date':fields.Date.today(),
-			'state': 'paid'})
+			'state': 'approve'})
 
 	@api.onchange('employee_id')
 	def _onchange_employee_id(self):

@@ -47,7 +47,7 @@
                             <field name="code" placeholder="Code"/>
                         </group>
                         <group col="6" colspan="4">
-                            <field name="semester_id"/>
+                            <field name="semester_id" widget="selection"/>
                             <field name="sem_type" invisible="1"/>
                         </group>
                         <notebook colspan="4">
@@ -212,7 +212,7 @@
                             </button>
                         </div>
                         <h2>
-                            <field name="student_id" placeholder="Student Name" colspan="4" attrs="{'readonly':[('state','not in','draft')]}"
+                            <field name="student_id" placeholder="Student ID" colspan="4" attrs="{'readonly':[('state','not in','draft')]}"
                                     domain="[('state','=','done')]" options="{&quot;no_create&quot;: True}"/>
 
                             </h2>

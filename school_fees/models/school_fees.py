@@ -251,6 +251,7 @@ class StudentPayslip(models.Model):
 	_inherit = 'ir.needaction_mixin'
 
 
+
 	@api.multi
 	def _compute_invoice(self):
 		'''Method to compute number invoice'''
@@ -262,7 +263,7 @@ class StudentPayslip(models.Model):
 
 	@api.model
 	def _needaction_domain_get(self):
-		return [('state','=','submit_discount')]
+		return [('state','in',('submit_discount','draft','submit_discount','discount_state','pending'))]
 
 
 	@api.multi

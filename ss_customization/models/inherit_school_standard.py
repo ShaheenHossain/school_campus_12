@@ -117,6 +117,7 @@ class SchoolStandard(models.Model):
     
     @api.onchange('teacher_id')
     def onchange_teacher_id(self):
+       
         class_ids = self.search([('teacher_id','=',self.teacher_id.id)]) 
         print ("============class_ids",class_ids)
         for data in class_ids:

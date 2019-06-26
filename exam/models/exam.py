@@ -232,6 +232,21 @@ class ExamExam(models.Model):
 
 
 
+#developer2
+	@api.constrains('name')
+	def name_validation_firstname(self):
+		for y in self:
+			if len(y.name)>=3:
+				res=re.match(r"^[^\W0-9_]+([ \-'][^\W0-9_]+)*?$",y.name)
+				if res:
+					return True
+				else:
+					raise UserError(_("Your First name must be have Only character"))
+			else:
+				raise UserError(_("Your first name must be more than 3 Characters"))
+
+
+
 	@api.multi
 	def generate_exam(self):
 		data = {}
