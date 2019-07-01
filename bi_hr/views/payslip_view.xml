@@ -817,7 +817,7 @@
                                     <field name="date_to"  attrs="{'required':[('type', '=', 'remove')]}" class="oe_inline"/>
                                 </div>
                                 <div>
-                                    <field name="number_of_days_temp" class="oe_inline"/> days
+                                    <field name="number_of_days_temp" class="oe_inline" type="integer"/> days
                                 </div>
                             </div>
                              <field name="absent_employee" groups="hr_holidays.group_hr_holidays_user"/>

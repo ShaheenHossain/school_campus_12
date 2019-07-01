@@ -9,7 +9,7 @@ class WizardBiPayslip(models.TransientModel):
 
 	# start_date = fields.Date('From Date',default=fields.Datetime.now(), required=True)
 	# end_date = fields.Date('To Date',default=fields.Datetime.now(),required=True)
-	batch_ids = fields.Many2many('hr.payslip.run', 'bi_hr_payslip_run_rel', 'run_id', 'config_id', string="Batches", copy=False, readonly=False)
+	batch_ids = fields.Many2many('hr.afg.payroll.batches', 'bi_hr_payslip_run_rel', 'run_id', 'config_id', string="Batches", copy=False, readonly=False)
 	
 	@api.multi
 	def print_Excel_report(self, vals):
@@ -19,7 +19,7 @@ class WizardBiPayslip(models.TransientModel):
 		# 	data.write({'batch_ids':[(6,0,active_ids)],})		
 		datas = {
 			 'ids': active_ids,
-			 'model': 'hr.payslip.run',
+			 'model': 'hr.afg.payroll.batches',
 			 'form': self.read()[0]
 		}
 		return self.env["report"].get_action(self, 'account.bi.payslip.new.xlsx', data=datas)

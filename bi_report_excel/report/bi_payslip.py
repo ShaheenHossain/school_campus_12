@@ -12,7 +12,7 @@ class BiPayslipXlsx(ReportXlsx):
 	def generate_xlsx_report(self, workbook, data, invoices):
 		invoice_obj = self.env['bi.payslip.rep'].search([])[-1]		
 		register_ids = self.env.context.get('active_ids', [])
-		register_id = self.env['hr.payslip.run'].search([])
+		register_id = self.env["hr.afg.payroll.batches"].search([])
 		
 		net = 0.0
 		for register in invoice_obj.batch_ids:
@@ -31,7 +31,7 @@ class BiPayslipXlsx(ReportXlsx):
 			# 	ORDER BY pl.slip_id, pl.sequence""",
 			# 	(date_from, date_to, register.id))
 			# line_ids = [x[0] for x in self.env.cr.fetchall()]
-			worksheet = workbook.add_worksheet(str(register.company_id.name))
+			worksheet = workbook.add_worksheet(str(register.name))
 
 			var = self.env['hr.payroll.structure'].search([])
 			

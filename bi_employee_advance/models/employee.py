@@ -64,6 +64,7 @@ class BiEmployeeSalary(models.Model):
 	ceo_note = fields.Text(string="CEO Remark", readonly=True, states={'ceo': [('readonly', False)]})
 	conditions_box = fields.Boolean(string="Conditions Not Applied", readonly=True, states={'request': [('readonly', False)]},default=False)
 	salary_deduction=fields.Selection([('1','1'),('2','2'),('3','3')],string='Installments',readonly=True,states={'draft': [('readonly', False)]})
+	lapsed_amount=fields.Float(string="Lapsed Amount")
 	@api.onchange('employee_id')
 	def onchange_employee_id(self):
 		if self.employee_id:

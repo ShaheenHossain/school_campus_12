@@ -27,6 +27,9 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/payslip_batches.xml',
+        'wizards/payslip_batches_wizard.xml',
+        'views/excel_view.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
